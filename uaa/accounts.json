@@ -1,0 +1,16 @@
+{
+  "accounts": [
+    {
+      "username": "john",
+      "password": "doe",
+      "scopes": ["database.write", "database.delete"],
+      "role": "moderator"
+    },
+    {
+      "username": "mary",
+      "password": "jane",
+      "scopes": ["database.read"],
+      "role": "guest"
+    }
+  ]
+}

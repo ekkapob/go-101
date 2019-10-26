@@ -1,0 +1,21 @@
+settings:
+  legacy:
+    force: true
+    interval: 0s
+schema:
+- name: example-3
+  path: .
+  commands:
+    run:
+      status: true
+  watcher:
+    extensions:
+    - go
+    paths:
+    - /
+    ignore:
+      paths:
+      - .git
+      - .realize
+      - vendor
+      - node_modules
