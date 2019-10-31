@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"time"
 )
 
 func main() {
@@ -105,6 +106,45 @@ func main() {
 	modifyMap(mm, "hi")
 	fmt.Println("map is modified to", mm["a"])
 	fmt.Println("---------------------13")
+
+	/*** Go routine ***/
+	fmt.Println("start go routines 1")
+	go doSomething()
+	time.Sleep(time.Second * 2) // sleep to make sure a routine is done
+	fmt.Println("finish go routines")
+	fmt.Println("---------------------14")
+
+	fmt.Println("start go routines 2")
+	done := make(chan bool)
+	go doSomethingWithChan(done)
+	<-done
+	fmt.Println("finish go routines")
+	fmt.Println("---------------------15")
+
+	fmt.Println("start go routines 3")
+	go doSomethingWithChan(done)
+	select {
+	case <-done:
+		fmt.Println("finish go routines")
+	}
+	fmt.Println("---------------------16")
+
+	/*** Go routine with select ***/
+	c := make(chan int)
+	i := 99
+	go doSomethingSelect(c, done)
+	for {
+		select {
+		case c <- i:
+			i += 1
+		case <-done:
+			// goto to break for loop in main
+			goto exit
+		}
+	}
+
+exit:
+	fmt.Println("---------------------17")
 }
 
 func modifyArray(list [2]string, s string) {
@@ -159,4 +199,21 @@ func areaOfCircle(r float32) float32 {
 
 func swapText(a string, b string) (string, string) {
 	return b, a
+}
+
+func doSomething() {
+	fmt.Println("do something")
+}
+
+func doSomethingWithChan(done chan bool) {
+	fmt.Println("do something")
+	done <- true
+}
+
+func doSomethingSelect(c chan int, done chan bool) {
+	fmt.Println("1. wait for c", <-c)
+	fmt.Println("2. wait for c", <-c)
+	fmt.Println("3. wait for c", <-c)
+	fmt.Println("4. wait for c", <-c)
+	done <- true
 }
