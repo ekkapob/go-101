@@ -2,64 +2,161 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"math"
 )
 
 func main() {
-	// hello world
-	fmt.Println("hello world")
+	/*** Display message ***/
+	fmt.Println("Hello World!")
+	fmt.Println("---------------------1")
 
-	fmt.Println("-----------------------------")
+	/*** Function in Go ***/
+	fmt.Println(areaOfCircle(5.234))
+	fmt.Println("---------------------2")
 
-	// multiple return values
-	a, b := swap("hello", "world")
-	fmt.Println(a, b)
+	/*** Function can return multilple values ***/
+	fmt.Println("swapping text", "result is")
+	fmt.Println(swapText("hello", "world"))
+	fmt.Println("---------------------3")
 
-	fmt.Println("-----------------------------")
+	/*** Variables ***/
+	var x string // default value for string is ""
+	x = "hello"
+	// this is equivalent to 2 lines above for creating x and assigning a value to x
+	y := "world"
+	fmt.Println(x, y)
+	fmt.Println("---------------------4")
 
-	// basic go routine
-	go greeting("1", nil)
-	bye("1")
-	time.Sleep(100)
+	/*** String concat ***/
+	fmt.Println("Hello" + "World")
+	fmt.Println("---------------------5")
 
-	fmt.Println("-----------------------------")
+	/*** Struct ***/
+	// see below [struct]
+	p := Person{}                        // create a variable p of type Person struct
+	fmt.Println(p.Firstname, p.Lastname) // default values for Firstname and Lastname are ""
 
-	x := make(chan bool)
-	go greeting("2", x)
-	select {
-	case <-x:
-		bye("2")
+	p = Person{
+		Firstname: "John",
+		Lastname:  "Dale",
+	} // create a new struct and assigning values
+	fmt.Println(p.Firstname, p.Lastname)
+	fmt.Println("---------------------6")
+
+	/*** Struct Methods ***/
+	// See [struct-meth]
+	fmt.Println(p.fullName())
+	fmt.Println("---------------------7")
+
+	/*** Method ***/
+	// ref: https://tour.golang.org/methods/3
+	// see below [meth]
+	var m MyInt
+	m = 100 // shorter version is m := MyInt(100)
+	fmt.Println(m.double())
+	fmt.Println("---------------------8")
+
+	/*** Pointer ***/
+	q := "hello"
+	var pt *string // how you create pointer variable (default is nil)
+	// pt := new(string) is another way to create a pointer variable
+	pt = &q // assign pointer (pt) to address of q (&q)
+	fmt.Println("value of pt is an address (q's address):", pt)
+	fmt.Println("address of q:", &q)
+	fmt.Println("value of data pt is pointing to (q):", *pt)
+	*pt = "world" // modify data pt is point to (modifying q data)
+	fmt.Println("value of q is modified to:", q)
+	fmt.Println("---------------------9")
+
+	/*** Struct Pointer ***/
+	pe := &Person{
+		Firstname: "Jane",
+		Lastname:  "Doe",
 	}
+	fmt.Println("<<<with struct receiver>>>")
+	fmt.Println("default kids are", pe.Kids)
+	// call a method with pointer receiver, so source struct will be modified
+	pe.addKids(2)
+	// pe is not impacted because it is struct receiver not pointer reciever
+	fmt.Println("modified kids are", pe.Kids)
+	fmt.Println("<<<with stuct pointer receiver>>>")
+	fmt.Println("default age is", pe.Age)
+	// call a method with pointer receiver, so source struct will be modified
+	pe.addAge(30)
+	fmt.Println("modified age is", pe.Age)
+	fmt.Println("---------------------10")
 
-	fmt.Println("-----------------------------")
+	/*** Array ***/
+	items := [2]string{"hello", "world"}
+	modifyArray(items, "!")
+	fmt.Println("list is", items)
+	fmt.Println("---------------------11")
 
-	y := make(chan bool)
-	go greeting("3", y)
-	<-y
-	bye("3")
+	/*** Slice ***/
+	s := []string{"hello", "world"}
+	modifySlice(s, "!")
+	fmt.Println("list is", s)
+	fmt.Println("---------------------12")
 
-	fmt.Println("-----------------------------")
-
-	z := make(chan bool)
-	go greeting("4", z)
-	for {
-		select {
-		case result := <-z:
-			bye(fmt.Sprintln("4", result))
-			return
-		}
-	}
+	/*** Map ***/
+	var mm map[string]string
+	mm = map[string]string{"a": "hello"}
+	fmt.Println("map was", mm["a"])
+	modifyMap(mm, "hi")
+	fmt.Println("map is modified to", mm["a"])
+	fmt.Println("---------------------13")
 }
 
-func swap(a, b string) (string, string) {
+func modifyArray(list [2]string, s string) {
+	list[1] = s
+}
+
+func modifySlice(slice []string, s string) {
+	slice[1] = s
+}
+
+func modifyMap(m map[string]string, s string) {
+	m["a"] = s
+}
+
+// [struct]
+// This is how you create a struct
+type Person struct {
+	Firstname string
+	Lastname  string
+	Age       int
+	Kids      int
+}
+
+// [struct-meth]
+// Method is function with a receiver (Golang calls "Receiver Function")
+// a receiver is (p Person) below
+// so, this is similar to class method in other OOP
+// ref: https://appdividend.com/2019/03/23/golang-receiver-function-tutorial-go-function-receivers-example/
+func (p Person) fullName() string {
+	return p.Firstname + " " + p.Lastname
+}
+
+func (p Person) addKids(kids int) {
+	p.Kids = kids
+}
+
+func (p *Person) addAge(age int) {
+	p.Age = age
+}
+
+// [meth]
+type MyInt int
+
+// a method (with MyInt receiver)
+func (m MyInt) double() MyInt {
+	return m * m
+}
+
+func areaOfCircle(r float32) float32 {
+	return math.Pi * r * r
+}
+
+func swapText(a string, b string) (string, string) {
 	return b, a
-}
-
-func greeting(id string, success chan bool) {
-	fmt.Println("Greeting", id)
-	success <- true
-}
-
-func bye(id string) {
-	fmt.Println("Bye", id)
 }
