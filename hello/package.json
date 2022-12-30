@@ -10,7 +10,7 @@
     "puppeteer": "^2.0.0"
   },
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "mocha": "^10.2.0"
   },
   "scripts": {
     "start": "realize start",
